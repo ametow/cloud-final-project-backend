@@ -1,4 +1,8 @@
-.PHONY: signup clean deploy
+.PHONY: signup signin clean deploy
+
+signin:
+	GOOS=linux GOARCH=amd64 go build -o signin/bootstrap signin/main.go
+	cd signin && zip deployment.zip bootstrap
 
 signup:
 	GOOS=linux GOARCH=amd64 go build -o signup/bootstrap signup/main.go

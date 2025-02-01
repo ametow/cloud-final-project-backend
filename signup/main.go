@@ -80,6 +80,20 @@ func main() {
 
 		resp, _ := handler(ctx, req)
 		respBody, _ := json.Marshal(resp)
-		return events.APIGatewayProxyResponse{StatusCode: 200, Body: string(respBody)}, nil
+
+		code := 400
+		if resp.Success {
+			code = 200
+		}
+		return events.APIGatewayProxyResponse{
+			StatusCode: code,
+			Body:       string(respBody),
+			Headers: map[string]string{
+				"Content-Type":                 "application/json",
+				"Access-Control-Allow-Origin":  "*", // Change this to a specific domain in production
+				"Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+				"Access-Control-Allow-Headers": "Content-Type",
+			},
+		}, nil
 	})
 }
