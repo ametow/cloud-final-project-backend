@@ -58,9 +58,10 @@ func handler(ctx context.Context, request Request) (Response, error) {
 	putItemInput := &dynamodb.PutItemInput{
 		TableName: aws.String(tableName),
 		Item: map[string]types.AttributeValue{
-			"email":    &types.AttributeValueMemberS{Value: request.Email},
-			"password": &types.AttributeValueMemberS{Value: request.Password},
-			"name":     &types.AttributeValueMemberS{Value: request.Name},
+			"email":     &types.AttributeValueMemberS{Value: request.Email},
+			"password":  &types.AttributeValueMemberS{Value: request.Password},
+			"name":      &types.AttributeValueMemberS{Value: request.Name},
+			"image_url": &types.AttributeValueMemberS{Value: ""},
 		},
 	}
 	_, err = dbClient.PutItem(ctx, putItemInput)
@@ -90,7 +91,7 @@ func main() {
 			Body:       string(respBody),
 			Headers: map[string]string{
 				"Content-Type":                 "application/json",
-				"Access-Control-Allow-Origin":  "*", // Change this to a specific domain in production
+				"Access-Control-Allow-Origin":  "*",
 				"Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 				"Access-Control-Allow-Headers": "Content-Type",
 			},

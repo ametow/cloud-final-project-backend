@@ -19,10 +19,16 @@ type Request struct {
 	Password string `json:"password"`
 }
 
+type User struct {
+	Email    string `json:"email"`
+	Name     string `json:"name"`
+	ImageURL string `json:"image_url"`
+}
+
 type Response struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
-	User    Request
+	User    User
 }
 
 const tableName = "final-project-users"
@@ -63,7 +69,17 @@ func handler(ctx context.Context, request Request) (Response, error) {
 		return Response{Success: false, Message: "User does not exist"}, nil
 	}
 
-	return Response{Success: true, Message: "Access granted", User: request}, nil
+	rawDataImage, _ := result.Item["image_url"]
+	imgUrl, _ := rawDataImage.(*types.AttributeValueMemberS)
+
+	rawDataName, _ := result.Item["name"]
+	dbName, _ := rawDataName.(*types.AttributeValueMemberS)
+
+	return Response{Success: true, Message: "Access granted", User: User{
+		Email:    request.Email,
+		Name:     dbName.Value,
+		ImageURL: imgUrl.Value,
+	}}, nil
 }
 
 func main() {
@@ -84,7 +100,7 @@ func main() {
 			Body:       string(respBody),
 			Headers: map[string]string{
 				"Content-Type":                 "application/json",
-				"Access-Control-Allow-Origin":  "*", // Change this to a specific domain in production
+				"Access-Control-Allow-Origin":  "*",
 				"Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 				"Access-Control-Allow-Headers": "Content-Type",
 			},
