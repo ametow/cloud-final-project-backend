@@ -27,7 +27,7 @@ type Response struct {
 	UploadURL string `json:"upload_url"`
 }
 
-const tableName = "final-project-users"
+const tableName = "ProjectUsers"
 const bucketName = "arsinuxbucket"
 const expiration = 5 * time.Minute // URL valid for 15 minutes
 

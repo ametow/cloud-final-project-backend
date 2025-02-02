@@ -31,7 +31,7 @@ type Response struct {
 	User    User
 }
 
-const tableName = "final-project-users"
+const tableName = "ProjectUsers"
 
 var dbClient *dynamodb.Client
 

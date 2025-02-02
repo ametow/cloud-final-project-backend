@@ -24,7 +24,7 @@ type Response struct {
 	Message string `json:"message"`
 }
 
-const tableName = "final-project-users"
+const tableName = "ProjectUsers"
 
 var dbClient *dynamodb.Client
 
