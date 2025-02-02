@@ -28,7 +28,7 @@ type Response struct {
 }
 
 const tableName = "ProjectUsers"
-const bucketName = "arsinuxbucket"
+const bucketName = "project-bucket-arsinux"
 const expiration = 5 * time.Minute // URL valid for 15 minutes
 
 var dbClient *dynamodb.Client
