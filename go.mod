@@ -1,6 +1,6 @@
 module github.com/ametow/cloud-final-project-backend.git
 
-go 1.23
+go 1.21
 
 require (
 	github.com/aws/aws-lambda-go v1.47.0
