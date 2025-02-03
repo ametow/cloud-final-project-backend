@@ -1,6 +1,14 @@
 version: 0.2
+env:
+  variables:
+    GOPATH: "/go"
+    GOBIN: "/go/bin"
 
 phases:
+  install:
+    runtime-versions:
+      golang: latest
+
   build:
     commands:
       - make signup
