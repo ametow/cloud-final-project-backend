@@ -76,7 +76,7 @@ func main() {
 	lambda.Start(func(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 		var req Request
 		if err := json.Unmarshal([]byte(request.Body), &req); err != nil {
-			return events.APIGatewayProxyResponse{StatusCode: 400, Body: `{"success": false, "message": "Invalid request body"}`}, nil
+			return events.APIGatewayProxyResponse{StatusCode: 400, Body: `{"success": false, "message": "Invalid request body", "version": "v1.0.0"}`}, nil
 		}
 
 		resp, _ := handler(ctx, req)

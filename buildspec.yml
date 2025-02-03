@@ -12,6 +12,9 @@ phases:
   build:
     commands:
       - make signup
+  post_build:
+    commands:
+      - aws lambda update-function-code --function-name project-signup --zip-file fileb://signup.zip
 
 artifacts:
   files:
