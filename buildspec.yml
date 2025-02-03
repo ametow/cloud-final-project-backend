@@ -3,9 +3,10 @@ version: 0.2
 phases:
   install:
     commands:
-      - apt install go
-      - apt install git
-      - apt install make
+      - sudo apt-get update -y
+      - sudo apt-get install -y golang
+      - sudo apt-get install -y git
+      - sudo apt-get install -y make
   pre_build:
     commands:
       - echo "Fetching commit tag..."
