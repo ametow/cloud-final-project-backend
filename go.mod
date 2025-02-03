@@ -1,12 +1,11 @@
 module github.com/ametow/cloud-final-project-backend.git
 
-go 1.23.4
+go 1.23
 
 require (
 	github.com/aws/aws-lambda-go v1.47.0
 	github.com/aws/aws-sdk-go-v2 v1.36.0
 	github.com/aws/aws-sdk-go-v2/config v1.29.4
-	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.17.57
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.39.7
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.75.2
 )
