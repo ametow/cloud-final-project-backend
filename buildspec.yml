@@ -1,18 +1,9 @@
 version: 0.2
 
 phases:
-  # install:
-  #   commands:
-  #     - sudo apt-get update -y
-  #     - sudo apt-get install -y golang
-  #     - sudo apt-get install -y git
-  #     - sudo apt-get install -y make
-  # pre_build:
-  #   commands:
-  #     - echo "Fetching commit tag..."
-  #     - export GIT_TAG=$(git describe --tags --abbrev=0 || echo "default-function")
-  #     - export PROJECT_NAME=$(echo $GIT_TAG | cut -d'-' -f1)
-
+  install:
+    commands:
+      - go mod tidy
   build:
     commands:
       - make signup
