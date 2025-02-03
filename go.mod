@@ -2,8 +2,6 @@ module github.com/ametow/cloud-final-project-backend.git
 
 go 1.21
 
-toolchain go1.23.4
-
 require (
 	github.com/aws/aws-lambda-go v1.47.0
 	github.com/aws/aws-sdk-go-v2 v1.36.0
