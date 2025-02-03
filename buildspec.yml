@@ -9,10 +9,8 @@ phases:
   pre_build:
     commands:
       - echo "Fetching commit tag..."
-      - export GIT_TAG=$(git describe --tags --abbrev=0 || echo "default-function")  # Get latest tag or fallback
-      - export PROJECT_NAME=$(echo $GIT_TAG | cut -d'-' -f1)  # Extract first part before '-'
-      - echo "Extracted Project Name: $PROJECT_NAME"
-      - echo "PROJECT_NAME=$PROJECT_NAME" >> $CODEBUILD_ENV_FILE  # Persist the variable
+      - export GIT_TAG=$(git describe --tags --abbrev=0 || echo "default-function")
+      - export PROJECT_NAME=$(echo $GIT_TAG | cut -d'-' -f1)
 
   build:
     commands:
@@ -20,4 +18,4 @@ phases:
 
 artifacts:
   files:
-    - signup/signup.zip  # Use a static reference to the output file
+    - signup/signup.zip
