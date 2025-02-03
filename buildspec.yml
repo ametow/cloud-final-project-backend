@@ -1,6 +1,11 @@
 version: 0.2
 
 phases:
+  install:
+    commands:
+      - apt install go
+      - apt install git
+      - apt install make
   pre_build:
     commands:
       - echo "Fetching commit tag..."
