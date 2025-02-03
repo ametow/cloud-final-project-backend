@@ -1,0 +1,16 @@
+version: 0.2
+
+phases:
+  pre-build:
+    commands:
+      - export GIT_TAG=$(git describe --tags --abbrev=0 || echo "default-function")  # Get latest tag or default
+      - export PROJECT_NAME=$(echo $GIT_TAG | cut -d'-' -f1)  # Extract first part before '-'
+      - echo "Extracted Project Name: $PROJECT_NAME"
+
+  build:
+    commands:
+      - make $PROJECT_NAME
+
+artifacts:
+  files:
+    - $PROJECT_NAME/$PROJECT_NAME.zip
