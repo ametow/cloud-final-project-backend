@@ -1,0 +1,300 @@
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  ProjectUsers:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ProjectUsers
+      AttributeDefinitions:
+        - AttributeName: email
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: email
+          KeyType: HASH
+  Api:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub
+        - ${ResourceName} From Stack ${AWS::StackName}
+        - ResourceName: Api
+      StageName: Prod
+      DefinitionBody:
+        openapi: "3.0"
+        info: {}
+        paths:
+          /sign-up:
+            post:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FunctionSignup.Arn}/invocations
+              responses: {}
+          /sign-in:
+            post:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FunctionSignin.Arn}/invocations
+              responses: {}
+          /presign:
+            post:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FunctionPresign.Arn}/invocations
+              responses: {}
+          /update-url:
+            put:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${FunctionUpdateUrl.Arn}/invocations
+              responses: {}
+      EndpointConfiguration: REGIONAL
+      TracingEnabled: true
+      Cors:
+        AllowOrigin: "'*'"
+        AllowHeaders: "'*'"
+        AllowMethods: "'*'"
+        MaxAge: 5
+  FunctionSignup:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: FunctionSignup
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: FunctionSignup
+      CodeUri: s3://arsinuxbucket/signup.zip
+      Handler: bootstrap
+      Runtime: provided.al2023
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Events:
+        ApiPOSTsignup:
+          Type: Api
+          Properties:
+            Path: /sign-up
+            Method: POST
+            RestApiId: !Ref Api
+      Environment:
+        Variables:
+          PROJECTUSERS_TABLE_NAME: !Ref ProjectUsers
+          PROJECTUSERS_TABLE_ARN: !GetAtt ProjectUsers.Arn
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProjectUsers
+  FunctionSignupLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Retain
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${FunctionSignup}
+  FunctionSignin:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: FunctionSignin
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: FunctionSignin
+      CodeUri: s3://arsinuxbucket/signin.zip
+      Runtime: provided.al2023
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Events:
+        ApiPOSTsingin:
+          Type: Api
+          Properties:
+            Path: /sign-in
+            Method: POST
+            RestApiId: !Ref Api
+      Handler: bootstrap
+      Environment:
+        Variables:
+          PROJECTUSERS_TABLE_NAME: !Ref ProjectUsers
+          PROJECTUSERS_TABLE_ARN: !GetAtt ProjectUsers.Arn
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProjectUsers
+  FunctionSigninLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Retain
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${FunctionSignin}
+  FunctionPresign:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: FunctionPresign
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: FunctionPresign
+      CodeUri: s3://arsinuxbucket/presign.zip
+      Runtime: provided.al2023
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Events:
+        ApiPOSTpresign:
+          Type: Api
+          Properties:
+            Path: /presign
+            Method: POST
+            RestApiId: !Ref Api
+      Environment:
+        Variables:
+          PROJECTUSERS_TABLE_NAME: "!Ref ProjectUsers"
+          PROJECTUSERS_TABLE_ARN: "!GetAtt ProjectUsers.Arn"
+          PROJECTBUCKET_BUCKET_NAME: "!Ref ProjectBucket"
+          PROJECTBUCKET_BUCKET_ARN: "!GetAtt ProjectBucket.Arn"
+          PROJECTBUCKET_BUCKET_NAME_2: !Ref ProjectBucket
+          PROJECTBUCKET_BUCKET_ARN_2: !GetAtt ProjectBucket.Arn
+          PROJECTUSERS_TABLE_NAME_2: !Ref ProjectUsers
+          PROJECTUSERS_TABLE_ARN_2: !GetAtt ProjectUsers.Arn
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:GetObjectAcl
+                - s3:GetObjectLegalHold
+                - s3:GetObjectRetention
+                - s3:GetObjectTorrent
+                - s3:GetObjectVersion
+                - s3:GetObjectVersionAcl
+                - s3:GetObjectVersionForReplication
+                - s3:GetObjectVersionTorrent
+                - s3:ListBucket
+                - s3:ListBucketMultipartUploads
+                - s3:ListBucketVersions
+                - s3:ListMultipartUploadParts
+                - s3:AbortMultipartUpload
+                - s3:DeleteObject
+                - s3:DeleteObjectVersion
+                - s3:PutObject
+                - s3:PutObjectLegalHold
+                - s3:PutObjectRetention
+                - s3:RestoreObject
+              Resource:
+                - !Sub arn:${AWS::Partition}:s3:::${ProjectBucket}
+                - !Sub arn:${AWS::Partition}:s3:::${ProjectBucket}/*
+        - Statement:
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:GetObjectAcl
+                - s3:GetObjectLegalHold
+                - s3:GetObjectRetention
+                - s3:GetObjectTorrent
+                - s3:GetObjectVersion
+                - s3:GetObjectVersionAcl
+                - s3:GetObjectVersionForReplication
+                - s3:GetObjectVersionTorrent
+                - s3:ListBucket
+                - s3:ListBucketMultipartUploads
+                - s3:ListBucketVersions
+                - s3:ListMultipartUploadParts
+                - s3:AbortMultipartUpload
+                - s3:DeleteObject
+                - s3:DeleteObjectVersion
+                - s3:PutObject
+                - s3:PutObjectLegalHold
+                - s3:PutObjectRetention
+                - s3:RestoreObject
+              Resource:
+                - !Sub arn:${AWS::Partition}:s3:::${ProjectBucket}
+                - !Sub arn:${AWS::Partition}:s3:::${ProjectBucket}/*
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProjectUsers
+      Handler: bootstrap
+  FunctionPresignLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Retain
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${FunctionPresign}
+  FunctionUpdateUrl:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: FunctionUpdateUrl
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: FunctionUpdateUrl
+      CodeUri: s3://arsinuxbucket/updateurl.zip
+      Runtime: provided.al2023
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Events:
+        ApiPUTupdateurl:
+          Type: Api
+          Properties:
+            Path: /update-url
+            Method: PUT
+            RestApiId: !Ref Api
+      Handler: bootstrap
+      Environment:
+        Variables:
+          PROJECTUSERS_TABLE_NAME: !Ref ProjectUsers
+          PROJECTUSERS_TABLE_ARN: !GetAtt ProjectUsers.Arn
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProjectUsers
+  FunctionUpdateUrlLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Retain
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${FunctionUpdateUrl}
+  
+
+  ProjectBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: project-bucket-arsinux
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: aws:kms
+              KMSMasterKeyID: alias/aws/s3
+      PublicAccessBlockConfiguration:
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - "*"
+            AllowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            AllowedOrigins:
+              - "*"
+            ExposedHeaders:
+              - ETag
+            Id: myCORSRuleId1
+            MaxAge: 3600
+
+  ProjectBucketBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ProjectBucket
+      PolicyDocument:
+        Id: RequireEncryptionInTransit
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "PublicReadGetObject"
+            Effect: "Allow"
+            Principal: "*"
+            Action: "s3:GetObject"
+            Resource: !Sub "arn:aws:s3:::${ProjectBucket}/project/*"
+
+Metadata:
+  AWS::Composer::Groups:
+    Group:
+      Label: Api functions
+      Members:
+        - FunctionPresign
+        - FunctionSignin
+        - FunctionSignup
+        - FunctionUpdateUrl
