@@ -12,10 +12,19 @@ phases:
   build:
     commands:
       - make signup
+      - make signin
+      - make presignedurl
+      - make updateimageurl
   post_build:
     commands:
-      - aws lambda update-function-code --function-name project-signup --zip-file fileb://signup.zip
+      - aws lambda update-function-code --function-name FunctionSignup --zip-file fileb://signup.zip
+      - aws lambda update-function-code --function-name FunctionSignin --zip-file fileb://signin.zip
+      - aws lambda update-function-code --function-name FunctionPresign --zip-file fileb://presign.zip
+      - aws lambda update-function-code --function-name FunctionUpdateUrl --zip-file fileb://updateurl.zip
 
 artifacts:
   files:
-    - signup/signup.zip
+    - signup.zip
+    - signin.zip
+    - presign.zip
+    - updateurl.zip
