@@ -86,7 +86,7 @@ Resources:
             TableName: !Ref ProjectUsers
   FunctionSignupLogGroup:
     Type: AWS::Logs::LogGroup
-    DeletionPolicy: Retain
+    DeletionPolicy: Delete
     Properties:
       LogGroupName: !Sub /aws/lambda/${FunctionSignup}
   FunctionSignin:
@@ -118,7 +118,7 @@ Resources:
             TableName: !Ref ProjectUsers
   FunctionSigninLogGroup:
     Type: AWS::Logs::LogGroup
-    DeletionPolicy: Retain
+    DeletionPolicy: Delete
     Properties:
       LogGroupName: !Sub /aws/lambda/${FunctionSignin}
   FunctionPresign:
@@ -208,7 +208,7 @@ Resources:
       Handler: bootstrap
   FunctionPresignLogGroup:
     Type: AWS::Logs::LogGroup
-    DeletionPolicy: Retain
+    DeletionPolicy: Delete
     Properties:
       LogGroupName: !Sub /aws/lambda/${FunctionPresign}
   FunctionUpdateUrl:
@@ -240,7 +240,7 @@ Resources:
             TableName: !Ref ProjectUsers
   FunctionUpdateUrlLogGroup:
     Type: AWS::Logs::LogGroup
-    DeletionPolicy: Retain
+    DeletionPolicy: Delete
     Properties:
       LogGroupName: !Sub /aws/lambda/${FunctionUpdateUrl}
   
